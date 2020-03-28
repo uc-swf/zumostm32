@@ -39,6 +39,12 @@ extern TIM_HandleTypeDef htim3;
 /// Handle für Timer4
 extern TIM_HandleTypeDef htim4;
 
+
+static volatile int32_t enc_left_10ms = 0;
+static volatile int32_t enc_right_10ms = 0;
+
+static int32_t enc_over_underflow(uint16_t enc_act, uint16_t enc_old);
+
 /**
  * @brief Initialisieren der Motoren und Encoder
  *
@@ -65,26 +71,71 @@ void motors_init()
 
 }
 
+static int32_t enc_over_underflow(uint16_t enc_act, uint16_t enc_old)
+{
+	int32_t tmp;
+
+	tmp = (int32_t)enc_act - (int32_t)enc_old;
+
+	// Check for overflow	(0x4000 = 16384; 0xC000=49152)
+	if ( (enc_act < 0x4000) && (enc_old > 0xC000) )
+	{
+		tmp+=65536;
+	}
+	// Check for underflow
+	if ( (enc_act > 0xC000) && (enc_old < 0x4000) )
+	{
+		tmp-=65536;
+	}
+	return (tmp);
+}
+
+/**
+ * @brief Encoder-Zählstande auswerten; wird über SysTick-ISR alle 10ms aufgerufen
+ *
+ */
+void motors_encoder_callback()
+{
+	uint32_t tmp;
+	static uint16_t enc_left_old;
+	static uint16_t enc_right_old;
+	uint16_t enc_left, enc_right;
+
+	enc_left  = __HAL_TIM_GET_COUNTER(&htim3);
+	enc_right = __HAL_TIM_GET_COUNTER(&htim4);
+
+	// Handle overflow
+	enc_left_10ms  += enc_over_underflow(enc_left,  enc_left_old);
+	enc_right_10ms += enc_over_underflow(enc_right, enc_right_old);
+
+	// Store values
+	enc_left_old = enc_left;
+	enc_right_old = enc_right;
+
+}
+
 /**
  * @brief Encoder-Zählstand linker Motor auslesen
  *
- * @warning **Wichtig** Z.Zt. nur positive Zahlen 0...65535 mit Überlauf 65535<->0
+ * (Inzwischen als in32 Wert...)
  *
  */
-int motors_encoder_left()
+int32_t motors_encoder_left()
 {
-	return __HAL_TIM_GET_COUNTER(&htim3);
+//	return __HAL_TIM_GET_COUNTER(&htim3);
+	return enc_left_10ms;
 }
 
 /**
  * @brief Encoder-Zählstand rechter Motor auslesen
  *
- * @warning **Wichtig** Z.Zt. nur positive Zahlen 0...65535 mit Überlauf 65535<->0
+ * (Inzwischen als in32 Wert...)
  *
  */
-int motors_encoder_right()
+int32_t motors_encoder_right()
 {
-	return __HAL_TIM_GET_COUNTER(&htim4);
+	return enc_right_10ms;
+//	return __HAL_TIM_GET_COUNTER(&htim4);
 }
 
 /**

@@ -18,12 +18,14 @@
 #ifndef INC_ZUMO_MOTORS_H_
 #define INC_ZUMO_MOTORS_H_
 
+#include <stdint.h>
+
 void motors_init();
 void motors_set_left_pwm(int16_t pwm);
 void motors_set_right_pwm(int16_t pwm);
 void motors_set_both_pwm(int16_t pwm_left, int16_t pwm_right);
 void motors_stop();
-int motors_encoder_left();
-int motors_encoder_right();
+int32_t motors_encoder_left();
+int32_t motors_encoder_right();
 
 #endif /* INC_ZUMO_MOTORS_H_ */

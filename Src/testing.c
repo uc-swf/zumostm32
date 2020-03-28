@@ -45,7 +45,6 @@
 #define BTN_NOWAIT 0   ///< in buttonpressed nicht warten, nur abfragen
 
 extern I2C_HandleTypeDef hi2c1;		///< Handle für I2C Bus, bei scan_i2c benötigz
-extern volatile  uint16_t overflow_cnt;
 
 static uint8_t buttonpressed(uint8_t wait);
 static void test_motors();
@@ -178,7 +177,7 @@ static void test_motors()
 		motors_set_right_pwm(pwm);
 
 		// Encoder-Werte ausgeben
-		sprintf(buf, "ENC: %6i  %6i (%2i)",motors_encoder_left(), motors_encoder_right(),overflow_cnt);
+		sprintf(buf, "ENC: %8li  %8li",motors_encoder_left(), motors_encoder_right());
 		display_gotoxy(0,5);
 		display_println(buf);
 

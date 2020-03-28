@@ -29,6 +29,8 @@
 
 
 
+extern volatile uint16_t seccnt;
+uint16_t secold;
 
 
 void main_user()
@@ -48,6 +50,7 @@ void main_user()
 	printf("**************************************\r\n");
 	printf("*  HERE we GO \r\n");
 	printf("**************************************\r\n\r\n");
+
 	/*
 	c=0;
 	while(c!=13)
