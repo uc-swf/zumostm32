@@ -12,6 +12,9 @@
 
  Erstellt:    08.11.2019
  Autor:       Tobias Ellermeyer
+
+ 28.03.2020 (TE):
+ 	 test_bt() entfernt, da nicht mehr benoetigt
 */
 
 
@@ -216,21 +219,6 @@ void scan_i2c()
 	printf("\r\n");
 }
 
-/***************************************************************************/
-/**
- * @brief  Bluetooth testen, z.Zt. nur Power einschalten ...
- *
- * @param none
- * @return none
- */
-static void test_bt()
-{
-	display_println("BT on 1 sec");
-	HAL_GPIO_WritePin(BT_PWR_GPIO_Port, BT_PWR_Pin,GPIO_PIN_SET);
-	HAL_Delay(1000);
-	HAL_GPIO_WritePin(BT_PWR_GPIO_Port, BT_PWR_Pin,GPIO_PIN_RESET);
-
-}
 
 /***************************************************************************/
 /**

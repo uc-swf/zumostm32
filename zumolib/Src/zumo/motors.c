@@ -12,6 +12,11 @@
 
  Erstellt:    11.09.2019
  Autor:       Tobias Ellermeyer
+
+
+ 28.03.2020 (TE):
+ 	 PWM positiv ist nun bei beiden Motoren "vorwaerts"
+
 */
 
 /**
@@ -95,13 +100,13 @@ void motors_set_left_pwm(int16_t pwm)
 	if ( (pwm<0) && (pwm>=-100) )
 	{
 		// Drehrichtung setzen
-		HAL_GPIO_WritePin(MOT_L_DIR_GPIO_Port, MOT_L_DIR_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(MOT_L_DIR_GPIO_Port, MOT_L_DIR_Pin, GPIO_PIN_SET);
 		// PWM Setzen
 		__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,-pwm);
 	}
 	else if (pwm<=100)
 	{
-		HAL_GPIO_WritePin(MOT_L_DIR_GPIO_Port, MOT_L_DIR_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(MOT_L_DIR_GPIO_Port, MOT_L_DIR_Pin, GPIO_PIN_RESET);
 		__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,pwm);
 	}
 }
