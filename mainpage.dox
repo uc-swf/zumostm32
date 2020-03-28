@@ -1,0 +1,67 @@
+/** @mainpage ZumoSTM32
+ *  
+ *  <b>Short Links</b> 
+ *  \ref motors.c
+ *  \ref display.c
+ *  \ref bno055.c
+ *  \ref distance.c
+ *  \ref testing.c
+ *
+ *  @section sec1 Einleitung 
+ *  Diese Beschreibung ist Bestandteil des Projekts <b>ZumoSTM32</b> und erläutert im 
+ *  Wesentlichen die Funktionen für die einzelnen Baugruppen
+ *
+ *  Alle benötigten Unterroutinen sind in dem Verzeichnis zumolib zusammengefasst;
+ *  dieses muss in den Include-Pfad mit eingebunden werden...
+ * 
+ *  Weiterhin befindet sich im Projekt die Datei \ref testing.c , in der sich die 
+ *  Testroutinen für den Hardware-Test befinden. Dort sind auch Anwendungsbeispiele
+ *  für die einzelnen Bestandteile der Bibliothek vorhanden.
+ *
+ *  @section sec2 Anzeige/Taster
+ *
+ *  @subsection sec2_1 LEDs und Taster 
+ *  Leds und Taster werden über die GPIO-Befehle angesprochen
+ *
+ *  @subsection sec2_2 Display
+ *  Alle das Display betreffenden Funktionen finden sich in der Datei
+ *  \ref display.c .
+ *
+ *  @subsection sec2_3 Serielle Datenverbindung
+ *  Standardmäßig ist die Datei \ref uart_printf.c Bestandteil der Bibliothek
+ *  Diese sorgt dafür, dass alle printf-Ausgaben an die serielle/USB-Verbindung
+ *  weiter gereicht werden. Die Einstellungen für das serielle Terminal sind
+ *  115200,8,1,N
+ *
+ *  @section sec3 Bewegung
+ *
+ *  @subsection sec3_1 Motoren
+ *  Eine Beschreibung der Funktionen für die Motoren findet sich in \ref motors.c
+ *
+ *  @subsection sec3_2 Encoder
+ *  Die Encoder werden ebenfalls über die in \ref motors.c enthaltenen  
+ *  Befehle ausgelesen.
+ *
+ *  @section sec4 Sensorik
+ *  @subsection sec4_1 Lagesensor (IMU)
+ *  Als Lagesensor ist ein Bosch BNO055 verbaut, welcher Kompass, Gryroskop und 
+ *  Beschleunigungssensor vereint. Gleichzeitig kann die Raumlage über Sensorfusion
+ *  direkt abgefragt werden.
+ *  Die Funktionen sind in \ref bno055.c zusammengefasst
+ *
+ *  @subsection sec4_2 Entfernungssensoren (ToF)
+ *  Der ZumoSTM32 hat insgesamt 5 Entfernungssensoren.
+ *  Die zugehörige Bibliothek ist \ref distance.c . Bislang 
+ *  funktionieren die Sensoren nur im Single-Shot und das auch nicht immer
+ *  100% zuverlässig.
+ *
+ *
+ *  @section sec5 Sound
+ *  Z.Zt. noch nicht implementiert, mit Ausnahme einer kleinen Testroutine \ref test_buzzer
+ *
+ *  @section sec6 Bluetooth
+ *  Z.Zt. noch nicht implementiert, lediglich Ein-/Ausschalten des BT-Moduls wird getestet
+ */
+ 
+ 
+    
