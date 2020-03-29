@@ -26,7 +26,6 @@
 static char bt_name[16];
 static uint8_t bt_initialized = BT_NOT_INITIALIZED;
 
-static uint8_t bt_program();		// Change settings of HC-05 module
 
 /**
  *  @brief Starten der Bluetooth-Verbindung
@@ -88,7 +87,8 @@ uint8_t bt_init()
 	// If status != 0, BT needs reprogramming
 	if (status!=0)
 	{
-		if (bt_program())	// Reprogramming of BT module needed
+		sprintf(bt_name,"UNNAMD");
+		if (bt_program(bt_name))	// Reprogramming of BT module needed
 		{	// There was an Error while reprogramming
 			bt_initialized = BT_NOT_INITIALIZED;
 			return 1;
@@ -193,7 +193,7 @@ uint8_t bt_receive(char* buf)
  *  @return 0 = success
  *  		1 = fail
  */
-static uint8_t bt_program()
+uint8_t bt_program(char *newname)
 {
 	char buf[40];
 
@@ -226,7 +226,7 @@ static uint8_t bt_program()
 	}
 
 	// Programm name
-	sprintf(bt_name,"Speedy_%s",BT_SUFFIX);
+	sprintf(bt_name,"%s_%s",newname,BT_SUFFIX);
 	sprintf(buf,"AT+NAME=%s\r\n",bt_name);
 	bt_send(buf);
 	bt_receive(buf);
@@ -262,3 +262,7 @@ static uint8_t bt_program()
 	return 0;
 }
 
+char* bt_getname()
+{
+	return bt_name;
+}

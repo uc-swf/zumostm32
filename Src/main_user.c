@@ -28,11 +28,6 @@
 #include "testing.h"
 
 
-
-extern volatile uint16_t seccnt;
-uint16_t secold;
-
-
 void main_user()
 {
 	uint8_t status;
@@ -51,19 +46,12 @@ void main_user()
 	printf("*  HERE we GO \r\n");
 	printf("**************************************\r\n\r\n");
 
-	/*
-	c=0;
-	while(c!=13)
-	{
-
-		c= uart_getc();
-		if (c>9) printf("Char %i %c\r\n",c,c);
-	}*/
 	// Initialisiere Bluetooth
 	status = bt_init();
 	if (status)
 	{
 		printf("***ERROR*** bt_init() returned %i\r\n",status);
+		Error_Handler();	// Do SOS blinking
 	}
 
 	// Initialisiere Entfernungsmessung
@@ -71,6 +59,7 @@ void main_user()
 	if (status)
 	{
 		printf("***ERROR*** distance_init() returned %i\r\n",status);
+		Error_Handler();	// Do SOS blinking
 	}
 
 	// BNO055 IMU initialisieren

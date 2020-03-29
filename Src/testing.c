@@ -25,6 +25,7 @@
 #include <zumo/motors.h>
 #include <zumo/distance.h>
 #include <zumo/bno055.h>
+#include <zumo/bluetooth.h>
 #include <math.h>
 #include "testing.h"
 
@@ -55,6 +56,7 @@ static void test_distance();
 static void testing_draw_body();
 static void testing_draw_dist(int x, int y, int intensity, int rot);
 static void test_bno055();
+static void test_btname();
 
 
 /***************************************************************************/
@@ -68,7 +70,7 @@ static void test_bno055();
 void test_menu(uint8_t preselect)
 {
 	int s=1;
-	int smax=5;
+	int smax=6;
 	int key;
 
 	while(1)
@@ -84,6 +86,7 @@ void test_menu(uint8_t preselect)
 			display_println("  Buzzer");
 			display_println("  BNO055");
 			display_println("  ToF-Sensoren");
+			display_println("  Bluetooth Name");
 
 			// "Wandernder" Pfeil, bei BTN_OK Schleife verlassen
 			while (1)
@@ -141,6 +144,8 @@ void test_menu(uint8_t preselect)
 		case 4:	test_bno055();
 				break;
 		case 5:	test_distance();
+				break;
+		case 6:	test_btname();
 				break;
 		default: break;
 		}
@@ -380,7 +385,56 @@ static uint8_t buttonpressed(uint8_t wait)
 }
 
 
+/**
+ * @brief Bluetooth-Namen setzen
+ *
+ * @param
+ * @return
+ */
 
+static void test_btname()
+{
+	char names[5][7]={"Speedy", "Sparky", "Spoofy", "Spacey", "Spiffy"};
+	char buf[15];
+	uint8_t btns;
+	uint8_t idx;
+
+	idx=0;
+	display_clear();
+	display_println("|  Set BT Name  |");
+	display_println("'---------------'");
+	sprintf(buf,"Now: %s",bt_getname());
+	display_println(buf);
+	display_println("<UP>  Nächster");
+	display_println("<OK>  Setzen");
+	display_println("<USR> zurück");
+
+	while(1)
+	{
+		display_gotoxy(0,7);
+		sprintf(buf,"NEW: %s",names[idx]);
+		display_println(buf);
+		btns = buttonpressed(BTN_WAIT);
+		if (btns&BTN_USR)
+		{
+			// Funktion ohne programmieren verlassen
+			return;
+		}
+		if (btns&BTN_UP)
+		{
+			idx = (idx+1)%5;
+		}
+		if (btns&BTN_OK)
+		{
+			break;	// Schleife verlassen und neuen Namen programmieren
+		}
+	}
+
+	display_clear();
+	display_println("Setze neuen Namen");
+	display_println(names[idx]);
+	bt_program(names[idx]);
+}
 //------------------------------------------------------------------------
 // Testing Distance sensors
 //------------------------------------------------------------------------
