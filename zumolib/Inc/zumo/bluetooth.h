@@ -18,6 +18,7 @@
 uint8_t bt_init();
 uint8_t bt_send(char* buf);
 uint8_t bt_receive(char *recv);
+uint8_t bt_program(char *name);
 char *bt_getname();
 
 
