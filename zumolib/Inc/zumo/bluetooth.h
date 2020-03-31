@@ -8,6 +8,8 @@
 #ifndef INC_ZUMO_BLUETOOTH_H_
 #define INC_ZUMO_BLUETOOTH_H_
 
+#include <stdint.h>
+
 #define BT_BAUDRATE  115200
 #define BT_SUFFIX    "Zumo"
 
@@ -17,7 +19,7 @@
 
 uint8_t bt_init();
 uint8_t bt_send(char* buf);
-uint8_t bt_receive(char *recv);
+uint8_t bt_receive(char *recv, uint8_t maxlen);
 uint8_t bt_program(char *name);
 char *bt_getname();
 

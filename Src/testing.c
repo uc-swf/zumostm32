@@ -79,14 +79,14 @@ void test_menu(uint8_t preselect)
 		{
 			// Menue ausgeben
 			display_clear();
-			display_println("|  HW-TESTS   |");
-			display_println("'-------------'");
-			display_println("  LEDs");
-			display_println("  Motor/Encode");
-			display_println("  Buzzer");
-			display_println("  BNO055");
-			display_println("  ToF-Sensoren");
-			display_println("  Bluetooth Name");
+			display_println("|  HW-TESTS   |\n"
+							"'-------------'\n"
+							"  LEDs\n"
+							"  Motor/Encode\n"
+							"  Buzzer\n"
+							"  BNO055\n"
+							"  ToF-Sensoren\n"
+							"  Bluetooth Name");
 
 			// "Wandernder" Pfeil, bei BTN_OK Schleife verlassen
 			while (1)
@@ -169,9 +169,9 @@ static void test_motors()
 	uint8_t done=0;
 
 	display_clear();
-	display_println("|  MOTOR-TEST  |");
-	display_println("'--------------'");
-	display_println("Ende mit <USR>");
+	display_println("|  MOTOR-TEST  |\n"
+					"'--------------'\n"
+					"Ende mit <USR>");
 
 	while (!done)
 	{
@@ -236,9 +236,10 @@ static void test_buzzer()
 	int i;
 
 	display_clear();
-	display_println("|  Buzzer Test  |");
-	display_println("'---------------'");
-	display_println("(2 Toene)");
+	display_println("|  Buzzer Test  |\n"
+					"'---------------'\n"
+					"(2 Toene)");
+
 	for(i=0;i<100;i++)
 	{
 		HAL_GPIO_WritePin(BUZ_PWM_GPIO_Port, BUZ_PWM_Pin,GPIO_PIN_SET);
@@ -271,10 +272,11 @@ static void test_leds()
 	uint8_t btns;
 	char buf[15];
 	display_clear();
-	display_println("|  LED Test  |");
-	display_println("'------------'");
-	display_println("<UP>  LED weiter");
-	display_println("<USR> zurück");
+	display_println("|  LED Test  |\n"
+					"'------------'\n"
+					"<UP>  LED weiter\n"
+					"<USR> zurück");
+
 
 	// Schleife
 	while(led_no <100)	// led_no >= 100 : Schleife verlassen
@@ -401,13 +403,14 @@ static void test_btname()
 
 	idx=0;
 	display_clear();
-	display_println("|  Set BT Name  |");
-	display_println("'---------------'");
+	display_println("|  Set BT Name  |\n"
+					"'---------------'");
+
 	sprintf(buf,"Now: %s",bt_getname());
 	display_println(buf);
-	display_println("<UP>  Nächster");
-	display_println("<OK>  Setzen");
-	display_println("<USR> zurück");
+	display_println("<UP>  Nächster\n"
+					"<OK>  Setzen\n"
+					"<USR> zurück");
 
 	while(1)
 	{
@@ -525,9 +528,9 @@ static void test_distance()
 	uint16_t range[5];  // FF, FL, FR, LL, RR
 
 	display_clear();
-	display_println("|  Distance Sensors  |");
-	display_println("'--------------------'");
-	display_println("<USR> Back to Main");
+	display_println("|  Distance Sensors  |\n"
+					"'--------------------'\n"
+					"<USR> Back to Main");
 
 	HAL_Delay(1000);
 	//distance_init_scan();
@@ -566,9 +569,9 @@ static void test_bno055()
 	double w0, wp, wm;  // Hauptwinkel, Winkel plus 30 / minus 30
 
 	display_clear();
-	display_println("|  Test IMU-Sensor  |");
-	display_println("'-------------------'");
-	display_println("<USR> Back to Main");
+	display_println("|  Test IMU-Sensor  |\n"
+					"'-------------------'\n"
+					"<USR> Back to Main");
 	HAL_Delay(1000);
 
 	// Orientierung zu Beginn als Bezug ...

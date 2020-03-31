@@ -64,7 +64,8 @@ void display_init()
 
 	u8g2_UpdateDisplay(&display_u8g2);
 
-	u8g2_SetFont(&display_u8g2, u8g2_font_tom_thumb_4x6_mf   ); //u8g2_font_4x6_mf   );  // Select Font
+	u8g2_SetFont(&display_u8g2, u8g2_font_5x7_mf   );  // Select Font
+	//u8g2_SetFont(&display_u8g2, u8g2_font_tom_thumb_4x6_mf   ); // Select Font
 
 	line_no=0;
 }
@@ -107,37 +108,34 @@ void display_clear_f()
  */
 void display_println(char* msg)
 {
-	char *ptr_s, *ptr_p;
-	char tmp;
-	// Separate NewLine \n
+	char *ptr_s;
+	char tmp[50];		// Need to copy string, as it may be in program memory ...
+	uint8_t idx;
+
 	ptr_s = msg;
-	ptr_p = ptr_s;
-/*	do
+	idx = 0;
+	do
 	{
-		if ( ( (*ptr_s) == '\n') || ( (*ptr_s) == '\0')) 	// NewLine found
+		if ((*ptr_s) == '\r') {ptr_s++;}  // Skip \r
+
+		if ( ((*ptr_s) == '\n') || ((*ptr_s)=='\0') ) 	// NewLine or End of String found
 		{
-			// temporary replace with \0
-			tmp = (*ptr_s);
-			(*ptr_s) = '\0';
+			tmp[idx]=0;
 			// Draw this part of string to screen, first check if scroll is necessary
-			if (line_no==7)  {display_scroll(); }
+			if (line_no>7)  {display_scroll(); }
 			  else {line_no++;}
 
-			u8g2_DrawStr(&display_u8g2,0,8*line_no,ptr_p);
-			// Revert to NewLine
-			(*ptr_s) = tmp;
-			// Set Print Pointer to Char after \n
-			ptr_p = ptr_s+1;
+			u8g2_DrawStr(&display_u8g2,0,8*line_no,tmp);
+			idx = 0;
+		}
+		else
+		{
+			tmp[idx++] = (*ptr_s);
 		}
 		// next char
-		ptr_s++;
+		//ptr_s++;
 	}
-	while ( (*ptr_s) != '\0');
-*/
-	if (line_no>7)  {display_scroll(); }	// Bugfix last line (29.03.2020 TE)
-	  else {line_no++;}
-
-	u8g2_DrawStr(&display_u8g2,0,8*line_no,msg);
+	while( (*(ptr_s++)) != '\0' );
 
 	u8g2_UpdateDisplay(&display_u8g2);
 }

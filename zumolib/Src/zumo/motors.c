@@ -3,19 +3,19 @@
    _/    _  _ (_  | |\/|  _)  _)
   /__|_||||(_)__) | |  | __) /__
 
- Fachhochschule Südwestfalen
+ Fachhochschule Suedwestfalen
  Mechatronik/Mikrocomputer
  Prof. Dr.-Ing. Tobias Ellermeyer
 
- Datei: motors.c
- Pfad:  zumolib/src/zumo
+ File: motors.c
+ Path:  zumolib/src/zumo
 
- Erstellt:    11.09.2019
- Autor:       Tobias Ellermeyer
+ Created:	   11.09.2019
+ Author:       Tobias Ellermeyer
 
 
  28.03.2020 (TE):
- 	 PWM positiv ist nun bei beiden Motoren "vorwaerts"
+ 	 Fixed sign of PWM for driving both motors forward
 
 */
 
@@ -23,7 +23,10 @@
  @file motors.c
  @code #include <zumo/motors.h> @endcode
 
- @brief Grundlegende Funktionen, um die Motoren mittels PWM anzusteuern
+ @brief Basic functions to control motor pwm and read out encoders
+
+ Motors use Timer 2, Channel 1&2 for PWM generation
+ Encoders are implemented in timer 3 (left) and 4 (right)
 
  @author Tobias Ellermeyer
  */
@@ -31,7 +34,6 @@
 #include "main.h"
 
 // Timer handles
-//extern TIM_HandleTypeDef htim1;
 /// Handle für Timer2
 extern TIM_HandleTypeDef htim2;
 /// Handle für Timer3
@@ -43,16 +45,16 @@ extern TIM_HandleTypeDef htim4;
 static volatile int32_t enc_left_10ms = 0;
 static volatile int32_t enc_right_10ms = 0;
 
-static int32_t enc_over_underflow(uint16_t enc_act, uint16_t enc_old);
+static int32_t enc_delta(uint16_t, uint16_t);
 
 /**
- * @brief Initialisieren der Motoren und Encoder
+ * @brief Initialize motors and encoders
  *
- * Für die Motoren wird Timer 2, Kanal 1 und 2 verwendet;
- * die Encoder nutzen Timer 3 und 4
+ * Motors will be initialized with PWM=0 (=off)
+ * Encoders will be set to 0
  *
- * Die Routine initialisiert die PWM mit dem Wert 0 (=Stillstand)
- *
+ * @params none
+ * @return none
  */
 void motors_init()
 {
@@ -66,12 +68,19 @@ void motors_init()
 	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,0);
 
 	/* Encoder Setup */
+	__HAL_TIM_SET_COUNTER(&htim3,0);
+	__HAL_TIM_SET_COUNTER(&htim4,0);
 	HAL_TIM_Encoder_Start_IT(&htim3,TIM_CHANNEL_1);
 	HAL_TIM_Encoder_Start_IT(&htim4,TIM_CHANNEL_1);
-
 }
 
-static int32_t enc_over_underflow(uint16_t enc_act, uint16_t enc_old)
+/**
+ * @brief: Internal routine to calculate delta based on actual and old value
+ *
+ * Over-/underflow will be taken into account.
+ *
+ */
+static int32_t enc_delta(uint16_t enc_act, uint16_t enc_old)
 {
 	int32_t tmp;
 
@@ -91,7 +100,9 @@ static int32_t enc_over_underflow(uint16_t enc_act, uint16_t enc_old)
 }
 
 /**
- * @brief Encoder-Zählstande auswerten; wird über SysTick-ISR alle 10ms aufgerufen
+ * @brief periodically read out encoders and check for over-/underflow
+ *
+ * Routine is called every 10ms from SysTick (see zumo/systick.c)
  *
  */
 void motors_encoder_callback()
@@ -101,23 +112,29 @@ void motors_encoder_callback()
 	static uint16_t enc_right_old;
 	uint16_t enc_left, enc_right;
 
+	// read out values
 	enc_left  = __HAL_TIM_GET_COUNTER(&htim3);
 	enc_right = __HAL_TIM_GET_COUNTER(&htim4);
 
 	// Handle overflow
-	enc_left_10ms  += enc_over_underflow(enc_left,  enc_left_old);
-	enc_right_10ms += enc_over_underflow(enc_right, enc_right_old);
+	enc_left_10ms  += enc_delta(enc_left,  enc_left_old);
+	enc_right_10ms += enc_delta(enc_right, enc_right_old);
 
-	// Store values
+	// Keep old values values
 	enc_left_old = enc_left;
 	enc_right_old = enc_right;
-
 }
 
 /**
- * @brief Encoder-Zählstand linker Motor auslesen
+ * @brief Return current value of left encoder
  *
- * (Inzwischen als in32 Wert...)
+ * Update: Changed to int32-value
+ *
+ * Possible improvement: Currently only the value of the last 10ms interval is returned
+ * 						 could be improved to add also the remaining steps until then
+ *
+ * @param none
+ * @return int32 (signed) of encoder steps
  *
  */
 int32_t motors_encoder_left()
@@ -127,9 +144,15 @@ int32_t motors_encoder_left()
 }
 
 /**
- * @brief Encoder-Zählstand rechter Motor auslesen
+ * @brief Return current value of right encoder
  *
- * (Inzwischen als in32 Wert...)
+ * Update: Changed to int32-value
+ *
+ * Possible improvement: Currently only the value of the last 10ms interval is returned
+ * 						 could be improved to add also the remaining steps until then
+ *
+ * @param none
+ * @return int32 (signed) of encoder steps
  *
  */
 int32_t motors_encoder_right()
@@ -139,20 +162,24 @@ int32_t motors_encoder_right()
 }
 
 /**
- * @brief Setzen des PWM-Wertes für linken Motor
+ * @brief set PWM value for left motor
  *
- * @param pwm Wert für die PWM (Wertebereich: -100 ... 100)
+ * Positive values will drive forward, negative backwards; Range -100 ... 100
+ * If value is outside these limits no changes will take place...
  *
- * Positive Werte -> vorwärts
+ * @param pwm: Value for PWM (-100 ... 100)
+ *
+ * @return none
  *
  */
 void motors_set_left_pwm(int16_t pwm)
 {
+	// Check for direction
 	if ( (pwm<0) && (pwm>=-100) )
 	{
-		// Drehrichtung setzen
+		// Change direction
 		HAL_GPIO_WritePin(MOT_L_DIR_GPIO_Port, MOT_L_DIR_Pin, GPIO_PIN_SET);
-		// PWM Setzen
+		// set pwm value (minus sign needed as pwm is <0 in this case)
 		__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_1,-pwm);
 	}
 	else if (pwm<=100)
@@ -163,20 +190,23 @@ void motors_set_left_pwm(int16_t pwm)
 }
 
 /**
- * @brief Setzen des PWM-Wertes für rechten Motor
+ * @brief set PWM value for left motor
  *
- * @param pwm Wert für die PWM (Wertebereich: -100 ... 100)
+ * Positive values will drive forward, negative backwards; Range -100 ... 100
+ * If value is outside these limits no changes will take place...
  *
- * Positive Werte -> vorwärts
+ * @param pwm: Value for PWM (-100 ... 100)
+ *
+ * @return none
  *
  */
 void motors_set_right_pwm(int16_t pwm)
 {
 	if ( (pwm<0) && (pwm>=-100) )
 	{
-		// Drehrichtung setzen
+		// Check for direction
 		HAL_GPIO_WritePin(MOT_R_DIR_GPIO_Port, MOT_R_DIR_Pin, GPIO_PIN_RESET);
-		// PWM Setzen
+		// set pwm value (minus sign needed as pwm is <0 in this case)
 		__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,-pwm);
 	}
 	else if (pwm<=100)
@@ -187,10 +217,14 @@ void motors_set_right_pwm(int16_t pwm)
 }
 
 /**
- * @brief Setzen des PWM-Wertes fuer beide Motorn
+ * @brief One routine to set bot PWMs
  *
- * @param pwm_left, pwm_right Wert2 für die PWM (Wertebereich: -100 ... 100)
- * Positive Werte -> vorwärts
+ * For more details, see motors_set_left_pwm() or motors_set_right_pwm()
+ *
+ * @param
+ * 		pwm_left, pwm_right: Values for PWM of both motors (Range: -100 ... 100)
+ *
+ * @return none
  */
 void motors_set_both_pwm(int16_t pwm_left, int16_t pwm_right)
 {
@@ -199,7 +233,12 @@ void motors_set_both_pwm(int16_t pwm_left, int16_t pwm_right)
 }
 
 /**
- * @brief Beide Motoren anhalten
+ * @brief Stop both motors
+ *
+ * (no breaking, just setting pwm to zero)
+ *
+ * @param none
+ * @return none
  *
  */
 void motors_stop()

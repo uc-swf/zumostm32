@@ -795,12 +795,11 @@ uint16_t VL53L0X_readRangeContinuousMillimeters(void)
 	// assumptions: Linearity Corrective Gain is 1000 (default);
 	// fractional ranging is not enabled
 	range = VL53L0X_readReg16Bit(RESULT_RANGE_STATUS + 10);
-	//range/=100;
 	VL53L0X_writeReg(SYSTEM_INTERRUPT_CLEAR, 0x01);
-
+	if (range > 999) range = 999;
 
     if (VL53L0X_timeoutOccurred()) {
-        range = 0x1FFE;
+        range = 999;
     }
 
 	return range;

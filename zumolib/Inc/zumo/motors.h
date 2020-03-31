@@ -3,15 +3,15 @@
    _/    _  _ (_  | |\/|  _)  _)
   /__|_||||(_)__) | |  | __) /__
 
- Fachhochschule Südwestfalen
+ Fachhochschule Suedwestfalen
  Mechatronik/Mikrocomputer
  Prof. Dr.-Ing. Tobias Ellermeyer
 
- Datei: motors.h
- Pfad:  zumolib/inc/zumo
+ File: motors.h
+ Path:  zumolib/inc/zumo
 
- Erstellt:    23.09.2019
- Autor:       Tobias Ellermeyer
+ Created:    23.09.2019
+ Author:     Tobias Ellermeyer
 */
 
 
