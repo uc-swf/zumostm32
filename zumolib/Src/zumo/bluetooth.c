@@ -280,6 +280,7 @@ uint8_t bt_program(char *newname)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  *  @brief Get name of bluetooth device
  *
@@ -289,6 +290,8 @@ uint8_t bt_program(char *newname)
  *  	name: 	char* pointing to name
  */
 
+=======
+>>>>>>> refs/remotes/origin/master
 char* bt_getname()
 {
 	return bt_name;

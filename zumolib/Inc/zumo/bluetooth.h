@@ -19,7 +19,11 @@
 
 uint8_t bt_init();
 uint8_t bt_send(char* buf);
+<<<<<<< HEAD
 uint8_t bt_receive(char *recv, uint8_t maxlen);
+=======
+uint8_t bt_receive(char *recv);
+>>>>>>> refs/remotes/origin/master
 uint8_t bt_program(char *name);
 char *bt_getname();
 

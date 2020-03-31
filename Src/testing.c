@@ -79,6 +79,7 @@ void test_menu(uint8_t preselect)
 		{
 			// Menue ausgeben
 			display_clear();
+<<<<<<< HEAD
 			display_println("|  HW-TESTS   |\n"
 							"'-------------'\n"
 							"  LEDs\n"
@@ -87,6 +88,16 @@ void test_menu(uint8_t preselect)
 							"  BNO055\n"
 							"  ToF-Sensoren\n"
 							"  Bluetooth Name");
+=======
+			display_println("|  HW-TESTS   |");
+			display_println("'-------------'");
+			display_println("  LEDs");
+			display_println("  Motor/Encode");
+			display_println("  Buzzer");
+			display_println("  BNO055");
+			display_println("  ToF-Sensoren");
+			display_println("  Bluetooth Name");
+>>>>>>> refs/remotes/origin/master
 
 			// "Wandernder" Pfeil, bei BTN_OK Schleife verlassen
 			while (1)
@@ -403,6 +414,7 @@ static void test_btname()
 
 	idx=0;
 	display_clear();
+<<<<<<< HEAD
 	display_println("|  Set BT Name  |\n"
 					"'---------------'");
 
@@ -411,6 +423,15 @@ static void test_btname()
 	display_println("<UP>  Nächster\n"
 					"<OK>  Setzen\n"
 					"<USR> zurück");
+=======
+	display_println("|  Set BT Name  |");
+	display_println("'---------------'");
+	sprintf(buf,"Now: %s",bt_getname());
+	display_println(buf);
+	display_println("<UP>  Nächster");
+	display_println("<OK>  Setzen");
+	display_println("<USR> zurück");
+>>>>>>> refs/remotes/origin/master
 
 	while(1)
 	{

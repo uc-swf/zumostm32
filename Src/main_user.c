@@ -27,7 +27,10 @@
 
 #include "testing.h"
 
+<<<<<<< HEAD
 #define WITH_TESTING		// Uncomment to remove test menu option (saves approx. 10k flash memory)
+=======
+>>>>>>> refs/remotes/origin/master
 
 void main_user()
 {
@@ -51,7 +54,11 @@ void main_user()
 	HAL_Delay(100);
 	printf("\r\n****   HERE we GO  ****\r\n\r\n");
 
+<<<<<<< HEAD
 	// initialize bluetooth
+=======
+	// Initialisiere Bluetooth
+>>>>>>> refs/remotes/origin/master
 	status = bt_init();
 	if (status)
 	{

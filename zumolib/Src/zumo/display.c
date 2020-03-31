@@ -64,8 +64,12 @@ void display_init()
 
 	u8g2_UpdateDisplay(&display_u8g2);
 
+<<<<<<< HEAD
 	u8g2_SetFont(&display_u8g2, u8g2_font_5x7_mf   );  // Select Font
 	//u8g2_SetFont(&display_u8g2, u8g2_font_tom_thumb_4x6_mf   ); // Select Font
+=======
+	u8g2_SetFont(&display_u8g2, u8g2_font_t0_11_mf ); //u8g2_font_4x6_mf   );  // Select Font
+>>>>>>> refs/remotes/origin/master
 
 	line_no=0;
 }
@@ -135,7 +139,16 @@ void display_println(char* msg)
 		// next char
 		//ptr_s++;
 	}
+<<<<<<< HEAD
 	while( (*(ptr_s++)) != '\0' );
+=======
+	while ( (*ptr_s) != '\0');
+*/
+	if (line_no>7)  {display_scroll(); }	// Bugfix last line (29.03.2020 TE)
+	  else {line_no++;}
+
+	u8g2_DrawStr(&display_u8g2,0,8*line_no,msg);
+>>>>>>> refs/remotes/origin/master
 
 	u8g2_UpdateDisplay(&display_u8g2);
 }
